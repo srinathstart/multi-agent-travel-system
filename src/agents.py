@@ -1,0 +1,52 @@
+import os
+from dotenv import load_dotenv
+from crewai import Agent, LLM
+
+load_dotenv()
+
+gemini_llm = LLM(
+    model="gemini/gemini-2.5-flash",
+    api_key=os.getenv("GEMINI_API_KEY")
+)
+
+accommodation_agent = Agent(
+    role="Hotel-Finding Expert",
+    goal="find the best accommodations that match the traveler's budget and interests.",
+    backstory="You are a seasoned travel agent with 15 years of experience booking stays worldwide. You have a talent for finding hidden-gem hotels that balance comfort and price.",
+    llm=gemini_llm,
+    verbose=True
+)
+
+cuisine_agent = Agent(
+    role="Local Cuisine and Beverage Expert",
+    goal=(
+        "Recommend the most authentic and must-try local dishes, street foods, "
+        "and beverages for the traveler, matching their destination, interests, and budget."
+    ),
+    backstory=(
+        "You are a passionate food writer and culinary guide who has spent years "
+          "eating your way through local markets, street stalls, and family-run "
+          "restaurants around the world. You have a gift for pointing travelers to "
+          "authentic flavors they would never find in a tourist guidebook, while "
+          "respecting their budget and dietary curiosity."
+    ),
+    llm=gemini_llm,
+    verbose=True
+)
+
+itinerary_agent = Agent(
+      role="Master Travel Itinerary Planner",
+      goal=(
+          "Combine the accommodation and cuisine recommendations into a clear, "
+          "realistic day-by-day travel itinerary that fits the traveler's duration, "
+          "budget, and interests."
+      ),
+      backstory=(
+          "You are an expert trip planner who excels at turning scattered travel "
+          "suggestions into a smooth, day-by-day plan. You group activities by "
+          "location to minimize travel time and weave food experiences naturally "
+          "into each day."
+      ),
+      llm=gemini_llm,
+      verbose=True
+  )
