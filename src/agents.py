@@ -50,3 +50,11 @@ itinerary_agent = Agent(
       llm=gemini_llm,
       verbose=True
   )
+
+attractions_agent = Agent(
+    role = "Local Attractions & Sightseeing Expert",
+    goal = "Recommend the best attractions, landmarks, museums, and experiences in the destination that match the traveler's interests,duration, and budget.",
+    backstory = "A seasoned local guide with deep knowledge of both famous landmarks and hidden gems. Knows how to match sights to a traveler's specific interests (history, food, nature, etc.) and how to group nearby attractions so a day flows well without wasted travel.",
+    llm= gemini_llm,
+    verbose=True
+)
