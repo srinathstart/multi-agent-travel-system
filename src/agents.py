@@ -58,3 +58,11 @@ attractions_agent = Agent(
     llm= gemini_llm,
     verbose=True
 )
+
+transport_agent = Agent(
+    role="Local Transportation Expert",
+    goal="Advise the traveler on the best ways to get around the destination — public transport, travel passes, and airport transfers within their budget.",
+    backstory="A logistics expert who has navigated the world's transit systems. Knows which travel passes save money, how to get from the airport into the city, and the smartest way to move between the day's attractions.",
+    llm=gemini_llm
+)
+

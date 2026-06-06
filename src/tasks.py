@@ -1,5 +1,5 @@
 from crewai import Task
-from src.agents import accommodation_agent, cuisine_agent,itinerary_agent,attractions_agent
+from src.agents import accommodation_agent, cuisine_agent,itinerary_agent,attractions_agent,transport_agent
 
 accommodation_task= Task(
     description=(
@@ -29,9 +29,15 @@ attractions_task = Task(
     agent=attractions_agent
 )
 
+transport_task = Task(
+    description="Advise on the best ways to get around Tokyo during a 5-day trip for a traveler interested in food and history, within a total budget of ₹80,000. Cover airport transfers, public transport options, and any money-saving travel passes.",
+    expected_output="A clear transport guide: airport-to-city options, the best way to get around the city (with any recommended passes and rough costs), and tips for moving between attraction areas efficiently.",
+    agent=transport_agent
+)
+
 itinerary_task = Task(
       description=(
-          "Using the recommended hotels and local food suggestions, create a "
+          "Using the recommended hotels, local food, attractions, and transport suggestions, create a "
           "detailed day-by-day itinerary for a 5-day trip to Tokyo for a traveler "
           "interested in food and history, within a total budget of ₹80,000."
       ),
@@ -41,7 +47,7 @@ itinerary_task = Task(
           "keeping nearby places grouped together."
       ),
       agent=itinerary_agent,
-      context=[accommodation_task, cuisine_task, attractions_task]   # ← the baton!
+      context=[accommodation_task, cuisine_task, attractions_task, transport_task]   # ← the baton!
   )
 
 
