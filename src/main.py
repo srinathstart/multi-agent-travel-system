@@ -9,7 +9,17 @@ travel_crew = Crew(
     verbose=True
 )
 
-result = travel_crew.kickoff()
+destination = input("Where do you want to travel? ")
+duration    = input("How many days is your trip? ")
+budget      = input("What is your total budget? ")
+interests   = input("What are your interests? (e.g. food, history) ")
+
+result = travel_crew.kickoff(inputs={
+      "destination": destination,
+      "duration":    duration,
+      "budget":      budget,
+      "interests":   interests,
+})
 
 print("\n\n========= FINAL RESULT =========\n")
 print(result)

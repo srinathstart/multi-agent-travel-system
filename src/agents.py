@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
 from crewai import Agent, LLM
+from src.tools import get_weather
 
 load_dotenv()
 
@@ -48,6 +49,7 @@ itinerary_agent = Agent(
           "into each day."
       ),
       llm=gemini_llm,
+      tools=[get_weather],
       verbose=True
   )
 
