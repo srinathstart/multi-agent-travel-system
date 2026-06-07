@@ -12,12 +12,14 @@ travel_crew = Crew(
 destination = input("Where do you want to travel? ")
 duration    = input("How many days is your trip? ")
 budget      = input("What is your total budget? ")
+currency    = input("In what currency? (e.g. INR, USD, EUR) ")
 interests   = input("What are your interests? (e.g. food, history) ")
 
 result = travel_crew.kickoff(inputs={
       "destination": destination,
       "duration":    duration,
       "budget":      budget,
+      "currency":    currency,
       "interests":   interests,
 })
 

@@ -46,6 +46,12 @@ real user input — by building one from scratch.
 | 15 | **`{placeholders}` + `kickoff(inputs={...})`** = fill task blanks with user values (key must match `{name}`) | ✅ |
 | 16 | LLM control knobs (`temperature`, `top_p`, `max_tokens`) live on `LLM(...)` — optional tuning | ✅ |
 | — | HTTP codes: 200 ok, 401/403 bad key, 404 not found, 429 quota, 503 server busy | ✅ |
+| 17 | **Ambiguous input → ASK, don't guess** — bare "5000" had no currency; the LLM silently guessed USD. Fix: collect `currency`, pass `{currency}` through | ✅ |
+| 18 | **Constrain the choices** — real apps use pickers/dropdowns for small fixed sets; free `input()` can't stop bad input (we deferred dropdown, just ask for now) | ✅ |
+| 19 | **Rules-check (budget math)** — LLMs are bad at arithmetic AND sound confident; force the planner to show a cost breakdown + total + a "fits/over" line | ✅ |
+| 20 | **Tool pattern, reused (web search)** — `@tool` + `requests.post` + key in `headers` + parse `data["organic"]`; `tools=[search_web]` on every agent | ✅ |
+| 21 | **POST vs GET / header auth** — search APIs receive the query in the *body* (POST); the key goes in a **header**, not the URL (weather was GET + key in URL) | ✅ |
+| 22 | **3 tiers of data**: ① generate=guess → ② web-search=grounded → ③ real API=authoritative (e.g. Amadeus). **We are now Tier 2.** | ✅ |
 
 ---
 
@@ -68,11 +74,17 @@ task. **Nothing is hardcoded anymore** (used to be Tokyo / 5 days / ₹80,000 / 
 
 Run order: `accommodation → cuisine → attractions → transport → itinerary`.
 
+**Added on 2026-06-07 (Session 2):**
+- **Currency input** — `main.py` now also asks "In what currency?" and passes `{currency}`; every task reads `{budget} {currency}` (e.g. "5000 INR"). Killed the bug where agents silently assumed USD.
+- **Budget enforcement** — the itinerary task now makes the planner show a **cost breakdown table + total + a clear "fits/over budget" line**. It correctly flagged ₹5,000/5 days as OVER BUDGET.
+- **Web search tool** — `search_web` (Serper API) added to `tools.py`; wired onto **all 5 agents** via `tools=[...]` + each task nudged to "search for real data, do not guess." Moved the whole project from **Tier 1 (guessing) → Tier 2 (grounded in real web data)**.
+
 ### Files
-- `src/agents.py` — Gemini LLM setup + the 5 agents; imports `get_weather`; itinerary has `tools=[get_weather]`
-- `src/tasks.py`  — the 5 tasks; all use `{placeholders}`; itinerary has the `context=[...]` baton
-- `src/main.py`   — builds the Crew, asks `input()` questions, runs `kickoff(inputs={...})`
-- `src/tools.py`  — the `get_weather` tool (OpenWeatherMap)
+- `src/agents.py` — Gemini LLM + the 5 agents; imports `get_weather, search_web`; **every agent has `tools=[search_web]`**; itinerary has `tools=[get_weather, search_web]`
+- `src/tasks.py`  — the 5 tasks; all use `{placeholders}` incl. `{currency}`; budget breakdown in itinerary; search nudges in the 4 specialist tasks; itinerary has the `context=[...]` baton
+- `src/main.py`   — builds the Crew, asks 5 `input()` questions (incl. currency), runs `kickoff(inputs={...})`
+- `src/tools.py`  — `get_weather` (OpenWeatherMap, GET) + `search_web` (Serper, POST + header key)
+- `.env`          — now also holds `SERPER_API_KEY` (instant activation, free 2,500 searches)
 
 ### How to run
 ```bash

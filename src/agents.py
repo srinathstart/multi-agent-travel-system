@@ -1,12 +1,12 @@
 import os
 from dotenv import load_dotenv
 from crewai import Agent, LLM
-from src.tools import get_weather
+from src.tools import get_weather, search_web
 
 load_dotenv()
 
 gemini_llm = LLM(
-    model="gemini/gemini-2.5-flash",
+    model="gemini/gemini-3.1-flash-lite",
     api_key=os.getenv("GEMINI_API_KEY")
 )
 
@@ -15,6 +15,7 @@ accommodation_agent = Agent(
     goal="find the best accommodations that match the traveler's budget and interests.",
     backstory="You are a seasoned travel agent with 15 years of experience booking stays worldwide. You have a talent for finding hidden-gem hotels that balance comfort and price.",
     llm=gemini_llm,
+    tools=[search_web],
     verbose=True
 )
 
@@ -32,6 +33,7 @@ cuisine_agent = Agent(
           "respecting their budget and dietary curiosity."
     ),
     llm=gemini_llm,
+    tools=[search_web],
     verbose=True
 )
 
@@ -49,7 +51,7 @@ itinerary_agent = Agent(
           "into each day."
       ),
       llm=gemini_llm,
-      tools=[get_weather],
+      tools=[get_weather, search_web],
       verbose=True
   )
 
@@ -58,6 +60,7 @@ attractions_agent = Agent(
     goal = "Recommend the best attractions, landmarks, museums, and experiences in the destination that match the traveler's interests,duration, and budget.",
     backstory = "A seasoned local guide with deep knowledge of both famous landmarks and hidden gems. Knows how to match sights to a traveler's specific interests (history, food, nature, etc.) and how to group nearby attractions so a day flows well without wasted travel.",
     llm= gemini_llm,
+    tools=[search_web],
     verbose=True
 )
 
@@ -65,6 +68,7 @@ transport_agent = Agent(
     role="Local Transportation Expert",
     goal="Advise the traveler on the best ways to get around the destination — public transport, travel passes, and airport transfers within their budget.",
     backstory="A logistics expert who has navigated the world's transit systems. Knows which travel passes save money, how to get from the airport into the city, and the smartest way to move between the day's attractions.",
-    llm=gemini_llm
+    llm=gemini_llm,
+    tools=[search_web]
 )
 
