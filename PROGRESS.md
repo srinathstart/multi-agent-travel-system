@@ -116,15 +116,38 @@ python -m src.main           # run from the project root; it will ask 4 question
 6. Agents work together (context) ✅ done
 7. Add a real-time TOOL (bonus) . ✅ done (weather tool, wired to itinerary agent)
 8. Take USER INPUT in main.py ... ✅ done (input() + kickoff(inputs={...}))
-9. VERIFY a full run end-to-end . ⬅️ NEXT (blocked on live weather key + Gemini 503)
+9. VERIFY a full run end-to-end . ✅ DONE (2026-06-09) — see below 🎉
 ```
 
-## 👉 NEXT TIME, start here
-1. **Run it for real:** confirm the `WEATHER_API_KEY` is live, then `python -m src.main`,
-   answer the 4 questions, and watch all 5 agents run + the itinerary agent **call the Weather Tool**.
-   (Quick syntax-only check anytime, no keys needed: `python -m py_compile src/*.py`.)
-2. If 503 → just rerun. If `401` on weather → key not active yet, wait a bit.
-3. The build is complete — after a clean run, the original project is DONE. 🎉
+**🎉 Step 9 verified (2026-06-09):** Ran Hyderabad / 5 days / 7000 INR / history. All 5 agents
+fired in order, `web_search_tool` pulled real data ~11×, and the **`weather_tool` fired live**
+("28.46°C with light rain" → the OpenWeatherMap key is now ACTIVE). The planner factored the
+rain into an indoor/outdoor day plan and printed a budget breakdown + "FITS BUDGET".
+**The original project is COMPLETE.**
+
+## ⚠️ What the successful run REVEALED (the Evaluation lesson, live)
+The planner **fudged the budget to force "FITS"**:
+- Transport agent researched **~3,000 INR**; planner quietly used **1,200**.
+- Food = **300 INR for 5 days** = **₹60/day** — impossible. It claimed this was "more realistic"; it's the opposite.
+- The LLM worked **backwards from the 7,000 target** ("motivated math") instead of adding honest numbers.
+
+→ Concept #19 (force a breakdown table) was step 1, but the table can still hold made-up numbers.
+**The numbers need a *code* check, not just an LLM check.**
+
+## 🚀 Going to production — Phase 1, Step 1 (current focus)
+The build works, but it can't be *trusted* (it fudged the budget). Taking it to production = TRUST first.
+We are doing **ONE step at a time**. Right now, only this:
+
+**STEP 1: Structured Output (JSON, not free-text markdown).**
+- **Problem (what we have):** `itinerary_task.expected_output` asks for a markdown table + prose.
+  Free text is for *humans to read*, not for *code to check*. Python can't reliably pull "food = 300"
+  out of a sentence, so it can't catch the fudged numbers.
+- **Goal:** make the planner emit a fixed **JSON shape** (days[], cost_breakdown{accommodation, transport,
+  food, entry_fees}, total, sources[]). Predictable keys = code can read every number.
+- **Why first:** every later production step (rules-check, tests, an API, a web UI) needs machine-readable
+  output. You can't validate or build on free text. JSON is the foundation.
+- **NOT doing yet (deliberately):** the rules-check, eval harness, FastAPI, Docker, parallel agents.
+  Those come after Step 1 works.
 
 ## 💡 Concepts to revisit LATER (deliberately deferred, not forgotten)
 Build first, THEN learn to watch & trust the agents. Two pillars of real agent engineering:

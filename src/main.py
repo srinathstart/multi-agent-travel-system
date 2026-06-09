@@ -23,5 +23,19 @@ result = travel_crew.kickoff(inputs={
       "interests":   interests,
 })
 
-print("\n\n========= FINAL RESULT =========\n")
-print(result)
+itinerary = result.pydantic   # the filled-in Itinerary form (a Python object)
+
+print("\n\n========= YOUR ITINERARY =========\n")
+for day in itinerary.days:
+    print(f"Day {day.day} — {day.base_area}")
+    print(f"   Activities: {', '.join(day.activities)}")
+    print(f"   Foods: {', '.join(day.foods)}")
+    print()
+
+print("----- COST BREAKDOWN -----")
+print(f"   Accommodation: {itinerary.cost_breakdown.accommodation}")
+print(f"   Transport:     {itinerary.cost_breakdown.transport}")
+print(f"   Food:          {itinerary.cost_breakdown.food}")
+print(f"   Entry fees:    {itinerary.cost_breakdown.entry_fees}")
+print(f"   TOTAL:         {itinerary.total} {itinerary.currency}")
+print(f"   Fits budget?   {itinerary.fits_budget}")

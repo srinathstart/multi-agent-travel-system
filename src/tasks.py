@@ -1,5 +1,6 @@
 from crewai import Task
 from src.agents import accommodation_agent, cuisine_agent,itinerary_agent,attractions_agent,transport_agent
+from src.schemas import Itinerary
 
 accommodation_task= Task(
     description=(
@@ -58,7 +59,8 @@ itinerary_task = Task(
           "'fits budget / over budget' line."
       ),
       agent=itinerary_agent,
-      context=[accommodation_task, cuisine_task, attractions_task, transport_task]   # ← the baton!
+      context=[accommodation_task, cuisine_task, attractions_task, transport_task],
+      output_pydantic=Itinerary   
   )
 
 
